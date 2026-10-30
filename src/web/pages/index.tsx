@@ -33,6 +33,8 @@ import { asset } from "../lib/demo";
 import { telHref, useSite } from "../queries/site";
 import { LeadForm } from "../components/lead-form";
 import { WaIcon } from "../components/header";
+import { useContent } from "../queries/content";
+import { PostCard } from "../components/content-ui";
 
 /* ───────────────────────── shared bits ───────────────────────── */
 
@@ -78,9 +80,9 @@ function GoogleG({ className = "h-7 w-7" }: { className?: string }) {
   );
 }
 
-const Stars = ({ className = "h-4 w-4" }: { className?: string }) => (
+const Stars = ({ className = "h-4 w-4", count = 5 }: { className?: string; count?: number }) => (
   <span className="flex text-sun">
-    {[0, 1, 2, 3, 4].map((k) => (
+    {Array.from({ length: count }, (_, k) => k).map((k) => (
       <Star key={k} className={`${className} fill-current`} />
     ))}
   </span>
@@ -112,7 +114,7 @@ const HERO: HeroSlide[] = [
     text: "Registration, logo & branding, websites, social media, AI tools and Microsoft certifications — all handled by experts, 100% online.",
     cta: "Get Free Consultation",
     link: "#enquiry",
-    image: asset("/images/hero-all.jpg"),
+    image: "/images/hero-all.jpg",
     chips: [
       { icon: Sparkles, big: "7 areas", small: "One expert team" },
       { icon: Smartphone, big: "100% online", small: "No office visit" },
@@ -127,7 +129,7 @@ const HERO: HeroSlide[] = [
     text: slide("/services/registration").text,
     cta: slide("/services/registration").cta,
     link: "/services/registration",
-    image: asset("/images/hero-registration.jpg"),
+    image: "/images/hero-registration.jpg",
     chips: [
       { icon: FileText, big: "GST in 3–7 days", small: "Fully online" },
       { icon: ShieldCheck, big: "CA & CS experts", small: "Document check" },
@@ -142,7 +144,7 @@ const HERO: HeroSlide[] = [
     text: slide("/services/branding").text,
     cta: slide("/services/branding").cta,
     link: "/services/branding",
-    image: asset("/images/hero-branding.jpg"),
+    image: "/images/hero-branding.jpg",
     chips: [
       { icon: PenTool, big: "Logo in 3–5 days", small: "2–3 concepts" },
       { icon: Palette, big: "Full brand kit", small: "Print + online" },
@@ -157,7 +159,7 @@ const HERO: HeroSlide[] = [
     text: slide("/services/website").text,
     cta: slide("/services/website").cta,
     link: "/services/website",
-    image: asset("/images/hero-website.jpg"),
+    image: "/images/hero-website.jpg",
     chips: [
       { icon: Globe2, big: "Website in 2–3 weeks", small: "Mobile-friendly" },
       { icon: Instagram, big: "Monthly posts", small: "Insta & Facebook" },
@@ -172,7 +174,7 @@ const HERO: HeroSlide[] = [
     text: slide("/services/microsoft-certifications").text,
     cta: slide("/services/microsoft-certifications").linkText,
     link: "/services/microsoft-certifications",
-    image: asset("/images/hero-microsoft.jpg"),
+    image: "/images/hero-microsoft.jpg",
     chips: [
       { icon: GraduationCap, big: "7 exams", small: "Fundamentals" },
       { icon: BookOpen, big: "Practice tests", small: "Like the real exam" },
@@ -222,7 +224,7 @@ function Hero() {
         {HERO.map((s, idx) => (
           <img
             key={s.image}
-            src={s.image}
+            src={asset(s.image)}
             alt=""
             aria-hidden={idx !== i}
             className={`absolute inset-0 h-full w-full object-cover object-[70%_center] transition-opacity duration-1000 ${idx === i ? "kenburns opacity-100" : "opacity-0"}`}
@@ -690,14 +692,12 @@ const WHY = [
   { icon: Briefcase, cls: "bg-[#FFF1DC] text-brand", title: "Real experts", text: "CA, CS and design experts guide you at every step." },
 ];
 
-const REVIEWS = [
-  { name: "Ravi K.", city: "Hyderabad", text: "My GST and company registration were done in a week. Very smooth, and they explained everything simply." },
-  { name: "Priya S.", city: "Bengaluru", text: "They designed our logo and website together. Looks very professional and customers notice it." },
-  { name: "Arjun M.", city: "Pune", text: "Our Instagram enquiries doubled in 2 months. The team posts on time every week." },
-];
 
 function Trust() {
   const site = useSite();
+  const content = useContent();
+  const rs = content.reviewsSection;
+  const REVIEWS = rs.show ? content.reviews.slice(0, 3) : [];
   return (
     <section className="bg-cream py-16 sm:py-20">
       <div className="container-x grid gap-12 lg:grid-cols-[0.95fr_1.3fr] lg:items-start">
@@ -718,17 +718,20 @@ function Trust() {
             ))}
           </div>
         </div>
+        {REVIEWS.length > 0 && (
         <div className="rounded-3xl bg-white p-5 ring-1 ring-line sm:p-7">
           <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
             <h3 className="text-[20px] font-extrabold">What Our Clients Say</h3>
-            <span className="flex items-center gap-2 text-[14px] font-semibold text-navy">
-              <GoogleG className="h-6 w-6" /> 4.8 on Google <Stars />
-            </span>
+            {rs.rating && (
+              <a href={rs.googleUrl || undefined} target="_blank" rel="noreferrer" className="flex items-center gap-2 text-[14px] font-semibold text-navy">
+                <GoogleG className="h-6 w-6" /> {rs.rating} on Google{rs.ratingCount ? ` (${rs.ratingCount})` : ""} <Stars />
+              </a>
+            )}
           </div>
           <div className="grid gap-4 sm:grid-cols-2">
             {REVIEWS.map((r, idx) => (
-              <figure key={r.name} className={`rounded-2xl border border-line bg-cream/60 p-5 ${idx === 2 ? "sm:col-span-2" : ""}`}>
-                <Stars />
+              <figure key={r.id} className={`rounded-2xl border border-line bg-cream/60 p-5 ${idx === 2 ? "sm:col-span-2" : ""}`}>
+                <Stars count={r.rating} />
                 <blockquote className="mt-3 text-[15px] leading-relaxed text-navy">"{r.text}"</blockquote>
                 <figcaption className="mt-4 flex items-center gap-3">
                   <span className={`grid h-10 w-10 place-items-center rounded-full text-[14px] font-bold text-white ${["bg-brand", "bg-royal", "bg-leaf"][idx]}`}>
@@ -736,12 +739,40 @@ function Trust() {
                   </span>
                   <span>
                     <span className="block font-bold text-navy">{r.name}</span>
-                    <span className="text-[13px]">{r.city}</span>
+                    <span className="text-[13px]">{r.place}</span>
                   </span>
                 </figcaption>
               </figure>
             ))}
           </div>
+        </div>
+        )}
+      </div>
+    </section>
+  );
+}
+
+/* ───────────────────────── Latest blog posts ───────────────────────── */
+
+function LatestPosts() {
+  const content = useContent();
+  if (!content.blog.show || !content.posts.length) return null;
+  return (
+    <section className="bg-cream py-16 sm:py-20">
+      <div className="container-x">
+        <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
+          <div>
+            <Eyebrow te="చిట్కాలు" en={content.blog.title || "Blog"} />
+            <h2 className="mt-3 text-3xl font-extrabold sm:text-[38px]">Tips &amp; Guides</h2>
+          </div>
+          <Link to="/blog" className="inline-flex items-center gap-1.5 font-bold text-brand hover:gap-2.5">
+            See all articles <ArrowRight className="h-4 w-4" />
+          </Link>
+        </div>
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {content.posts.slice(0, 3).map((p) => (
+            <PostCard key={p.id} p={p} />
+          ))}
         </div>
       </div>
     </section>
@@ -750,16 +781,11 @@ function Trust() {
 
 /* ───────────────────────── 9. FAQ ───────────────────────── */
 
-const FAQS = [
-  { q: "Do I need to visit your office?", a: "No. Everything is done online. You can share documents on WhatsApp or email." },
-  { q: "How long does GST registration take?", a: "Usually 3 to 7 working days, once we have all your documents." },
-  { q: "Can you do registration and the website together?", a: "Yes. Many clients start with registration and logo, then add a website. We offer combo prices." },
-  { q: "How do I pay?", a: "You can pay by UPI, debit/credit card or bank transfer. You get a proper GST invoice." },
-  { q: "I'm not sure which registration I need. Can you help?", a: "Yes — that's what the free consultation is for. Our expert will suggest the right option for you." },
-];
 
 function Faq() {
   const [open, setOpen] = useState<number | null>(0);
+  const FAQS = useContent().faqs;
+  if (!FAQS.length) return null;
   return (
     <section className="bg-white py-16 sm:py-20">
       <div className="container-x grid gap-10 lg:grid-cols-[0.85fr_1.3fr] lg:items-center">
@@ -784,7 +810,7 @@ function Faq() {
             {FAQS.map((f, idx) => {
               const isOpen = open === idx;
               return (
-                <div key={f.q} className={`rounded-2xl border bg-white transition ${isOpen ? "border-brand/40 shadow-[0_16px_30px_-24px_rgba(255,106,19,0.7)]" : "border-line"}`}>
+                <div key={f.id} className={`rounded-2xl border bg-white transition ${isOpen ? "border-brand/40 shadow-[0_16px_30px_-24px_rgba(255,106,19,0.7)]" : "border-line"}`}>
                   <button onClick={() => setOpen(isOpen ? null : idx)} className="flex w-full items-center justify-between gap-4 px-5 py-4 text-left font-bold text-navy" aria-expanded={isOpen}>
                     {f.q}
                     <ChevronDown className={`h-5 w-5 shrink-0 text-brand transition ${isOpen ? "rotate-180" : ""}`} />
@@ -850,6 +876,7 @@ export default function Index() {
       <Process />
       <ForEveryBusiness />
       <Trust />
+      <LatestPosts />
       <Faq />
       <CtaBand />
     </>

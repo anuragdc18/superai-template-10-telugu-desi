@@ -5,6 +5,7 @@ import { ChevronDown, Clock, Mail, Menu, Minus, Phone, Plus, X, ArrowRight, Layo
 import { CATEGORIES, serviceUrl, waLink } from "../lib/site";
 import { telHref, useSite } from "../queries/site";
 import { authClient } from "../lib/auth";
+import { useExtraLinks } from "./content-ui";
 
 export function Logo({ light = false }: { light?: boolean }) {
   const site = useSite();
@@ -41,6 +42,7 @@ function WaIcon({ className = "h-4 w-4" }: { className?: string }) {
 export { WaIcon };
 
 export function Header() {
+  const extra = useExtraLinks();
   const [open, setOpen] = useState(false);
   const [acc, setAcc] = useState<string | null>("registration");
   const [scrolled, setScrolled] = useState(false);
@@ -101,7 +103,7 @@ export function Header() {
         <div className="container-x flex h-[72px] items-center gap-4">
           <Logo />
 
-          <nav className="ml-auto hidden items-center gap-0.5 min-[1150px]:flex xl:gap-1">
+          <nav className="ml-auto hidden items-center gap-0.5 min-[1200px]:flex xl:gap-1">
             <Link
               to="/"
               className={`rounded-lg px-2.5 py-2 text-[14px] font-medium xl:px-3 xl:text-[15px] ${loc === "/" ? "text-brand" : "text-navy hover:text-brand"}`}
@@ -142,17 +144,37 @@ export function Header() {
                 </div>
               </div>
             ))}
+            {extra.length > 0 && (
+              <div className="group relative">
+                <button type="button" className={`flex items-center gap-1 whitespace-nowrap rounded-lg px-2.5 py-2 text-[14px] font-medium transition xl:px-3 xl:text-[15px] ${
+                    extra.some((x) => loc.startsWith(x.to)) ? "text-brand" : "text-navy group-hover:text-brand"
+                  }`}>
+                  More
+                  <ChevronDown className="h-4 w-4 transition group-hover:rotate-180" />
+                </button>
+                <div className="invisible absolute right-0 top-full w-[220px] translate-y-2 pt-3 opacity-0 transition duration-200 group-focus-within:visible group-focus-within:translate-y-0 group-focus-within:opacity-100 group-hover:visible group-hover:translate-y-0 group-hover:opacity-100">
+                  <div className="rounded-2xl border border-line bg-white p-2 shadow-[0_24px_50px_-20px_rgba(11,31,75,0.35)]">
+                    {[...extra, { to: "/contact", label: "Contact Us" }].map((x) => (
+                      <Link key={x.to} to={x.to} className="flex items-center gap-2.5 rounded-lg px-3 py-2.5 text-[14px] text-navy hover:bg-surface hover:text-brand">
+                        <span className="h-1.5 w-1.5 rounded-full bg-brand" />
+                        {x.label}
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
           </nav>
           <a
             href={waLink(site.whatsapp)}
             target="_blank"
             rel="noreferrer"
-            className="hidden shrink-0 items-center gap-1.5 rounded-xl bg-wa px-3.5 py-2.5 text-[14px] font-semibold text-white shadow-[0_8px_18px_-8px_rgba(37,211,102,0.8)] transition hover:-translate-y-0.5 xl:inline-flex"
+            className="hidden shrink-0 items-center gap-1.5 rounded-xl bg-wa px-3.5 py-2.5 text-[14px] font-semibold text-white shadow-[0_8px_18px_-8px_rgba(37,211,102,0.8)] transition hover:-translate-y-0.5 2xl:inline-flex"
           >
             <WaIcon className="h-4 w-4" /> WhatsApp Us
           </a>
 
-          <div className="ml-auto flex items-center gap-2 min-[1150px]:hidden">
+          <div className="ml-auto flex items-center gap-2 min-[1200px]:hidden">
             <button
               onClick={() => setOpen(true)}
               className="grid h-11 w-11 place-items-center rounded-xl border border-line text-navy"
@@ -165,7 +187,7 @@ export function Header() {
       </header>
 
       {/* Mobile drawer */}
-      <div className={`fixed inset-0 z-[60] min-[1150px]:hidden ${open ? "" : "pointer-events-none"}`}>
+      <div className={`fixed inset-0 z-[60] min-[1200px]:hidden ${open ? "" : "pointer-events-none"}`}>
         <button
           type="button"
           aria-label="Close menu overlay"
@@ -219,6 +241,11 @@ export function Header() {
                 </div>
               );
             })}
+            {[...extra, { to: "/contact", label: "Contact Us" }].map((x) => (
+              <Link key={x.to} to={x.to} className="block border-b border-line py-3.5 font-semibold text-navy">
+                {x.label}
+              </Link>
+            ))}
             {session && (
               <Link to="/admin/dashboard" className="block py-3.5 font-semibold text-royal">
                 Owner Dashboard
