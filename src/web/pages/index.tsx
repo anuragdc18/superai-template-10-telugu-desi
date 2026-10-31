@@ -639,10 +639,10 @@ function Process() {
 const findCat = (name: string) => CATEGORIES.find((c) => c.services.some((s) => s.name === name))!;
 
 const BUSINESSES = [
-  { img: "biz-kirana.jpg", title: "Kirana & retail shops", services: ["GST Registration", "MSME / Udyam", "WhatsApp Auto-Reply"] },
-  { img: "biz-salon.jpg", title: "Salons & clinics", services: ["Logo Design", "Instagram & Facebook Handling", "Appointment Booking Bot"] },
-  { img: "biz-tuition.jpg", title: "Tuitions & coaching", services: ["Business Website", "Flyer & Poster", "Paid Ads (Boosting)"] },
-  { img: "biz-boutique.jpg", title: "Boutiques & sellers", services: ["Online Store", "Trademark", "Social Media Post Design"] },
+  { img: "biz-kirana.jpg", title: "Kirana & retail shops", services: ["GST Registration", "Udyam / MSME Registration", "WhatsApp AI Reply Setup"] },
+  { img: "biz-salon.jpg", title: "Salons & clinics", services: ["Logo Design", "Social Media Management", "Appointment Booking Chatbot"] },
+  { img: "biz-tuition.jpg", title: "Tuitions & coaching", services: ["WordPress Website Development", "Flyer / Posters", "Ads Boosting"] },
+  { img: "biz-boutique.jpg", title: "Boutiques & sellers", services: ["Ecommerce Website Development", "Trademark Registration", "Social Media Post Design"] },
 ];
 
 function ForEveryBusiness() {
