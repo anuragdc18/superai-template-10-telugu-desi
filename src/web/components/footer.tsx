@@ -95,6 +95,12 @@ export function Footer() {
         <div className="container-x flex flex-col items-center justify-between gap-2 py-5 text-[13px] sm:flex-row">
           <p>© {new Date().getFullYear()} {site.siteName}. All rights reserved.</p>
           <p lang="te" className="te">తెలుగు రాష్ట్రాల నుంచి India అంతటా · Serving businesses across India</p>
+          <p>
+            Designed by{" "}
+            <a href="https://digitalconnect.in" target="_blank" rel="noopener" className="font-semibold underline-offset-2 hover:underline">
+              digitalconnect.in
+            </a>
+          </p>
         </div>
       </div>
     </footer>
